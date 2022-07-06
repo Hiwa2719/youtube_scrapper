@@ -6,6 +6,7 @@ import aiohttp
 from bs4 import BeautifulSoup
 from selenium import webdriver
 
+
 message = """
 Please enter your search key word here
 (you can enter 'q' for exit)
@@ -20,16 +21,17 @@ search_input = search_input.replace(' ', '+')
 url = f'https://www.youtube.com/results?search_query={search_input}'
 
 browser = webdriver.Firefox()
+browser.implicitly_wait(10)
 browser.get(url)
 
+retrieve_number = 120  # number of channels to extract data from youtube
 search_items = {}
 
 while True:
-    time.sleep(2)
     soup = BeautifulSoup(browser.page_source, 'lxml')
     content = soup.find(id='contents')
     items = content.find_all('ytd-video-renderer', {'class': 'style-scope ytd-item-section-renderer'})
-    if len(items) > 10:
+    if len(items) > retrieve_number:
         for item in items:
             a = item.find(id='text-container').find('a')
             search_items.update({
