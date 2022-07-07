@@ -43,6 +43,7 @@ counter = 0
 
 
 async def get_pages(session, key, value):
+    """Fetches channels page and extracting subscribers count"""
     global counter
     local_counter = counter
     counter += 1
@@ -64,6 +65,7 @@ async def get_pages(session, key, value):
 
 
 async def async_requests(loop):
+    """Creating a single task to get all channels page"""
     tasks = list()
     async with aiohttp.ClientSession(loop=loop) as session:
         for key, value in search_items.items():
