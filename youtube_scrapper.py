@@ -15,17 +15,18 @@ search_input = input(message)
 if search_input.lower() == 'q':
     exit()
 
-search_input = search_input.replace(' ', '+')
-url = f'https://www.youtube.com/results?search_query={search_input}'
+modified_search_input = search_input.replace(' ', '+')
+url = f'https://www.youtube.com/results?search_query={modified_search_input}'
 
 browser = webdriver.Firefox()
 browser.implicitly_wait(10)
 browser.get(url)
 
 retrieve_number = 120  # number of channels to extract data from youtube
-search_items = {}
+search_items = {}  # extracted data from search page
 
-while True:
+# extracting channels and their links
+while len(search_items) < retrieve_number:
     items = browser.find_elements(By.CSS_SELECTOR, '#contents ytd-video-renderer.style-scope.ytd-item-section-renderer')
     if len(items) > retrieve_number:
         for item in items:
@@ -34,7 +35,7 @@ while True:
                 a.get_attribute('href'): a.get_attribute('innerHTML')
             })
         break
-    browser.execute_script("window.scrollBy(0, 15000)")
+    browser.execute_script("window.scrollBy(0, 10000)")
 
 browser.close()
 
@@ -78,6 +79,7 @@ loop = asyncio.get_event_loop()
 loop.run_until_complete(async_requests(loop))
 
 with open('output.csv', 'w', encoding='utf-8') as file:
+    file.write(f'Search input,{search_input}\n')
     file.write('Name,Link,Subscribers count\n')
     for channel in result:
         string = f'{channel["name"]},{channel["link"]},{channel["subscribers"]}\n'
